@@ -1,0 +1,12 @@
+{
+    "desription": "temp config for network physician",
+    "inspectors": [
+        {
+            "name": "ping",
+            "params": {
+                "less_then": 1000,
+                "interval": 3000
+            }
+        }
+        ]
+}
