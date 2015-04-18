@@ -31,14 +31,6 @@ var Doctor = function (config) {
 
 };
 
-Doctor.prototype.notifyDrop = function (data) {
-    this.emit('now.unhealthy', data);
-};
-
-Doctor.prototype.notifyRestore = function (data) {
-    this.emit('now.healthy', data);
-};
-
 Doctor.prototype.on = function (event, listener) {
     this.emitter.on(event, listener);
 };
@@ -50,5 +42,14 @@ Doctor.prototype.off = function (event, listener) {
 Doctor.prototype.emit = function (event, data) {
     this.emitter.emit(event, data);
 };
+
+Doctor.prototype.notifyDrop = function (data) {
+    this.emit('now.unhealthy', data);
+};
+
+Doctor.prototype.notifyRestore = function (data) {
+    this.emit('now.healthy', data);
+};
+
 
 module.exports = Doctor;
