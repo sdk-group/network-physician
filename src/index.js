@@ -1,6 +1,12 @@
-var ping = require('./inspectors/ping.js');
-var config = require('./config.json');
-console.log(config);
-var p = new ping({
-    ip_range: 2
+var Doctor = require('./doctor.js');
+var iconfig = require('./inspectors-config.json');
+
+var doctor = new Doctor(iconfig);
+
+doctor.on('now.unhealthy', function (data) {
+    console.log('unhealthy:', data);
+});
+
+doctor.on('now.healthy', function (data) {
+    console.log('healthy:', data);
 });

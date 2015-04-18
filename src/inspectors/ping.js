@@ -3,49 +3,43 @@
 var Abstract = require('./abstract.js');
 var utils = require('util');
 var Promise = require('bluebird');
-var http = require("http");
+var Pinger = require('./ping-single.js');
+var _ = require('lodash');
 
 var PingInspector = function (params, start, stop) {
-    if (!params.hasOwnProperty('ip_range')) {
+    var self = this;
+    this.stop = false;
+
+    if (!params.hasOwnProperty('ip')) {
         throw new Error('ip_range param required');
         return;
     }
-    this.ip_range = params.ip_range;
+    this.ip = params.ip;
+
+    this.pingers = [];
     //bluebird generator there
-    this.ping("192.168.42.74")
-        .then(function (time) {
-            console.log("Response time: %dms", time);
-        })
-        .catch(function (time) {
-            console.log("rejected: %dms", time);
-        });
+    _(this.ip).forEach(function (ip) {
+        var options = {
+            interval: params.interval,
+            less_then: params.less_then,
+            ip: ip
+        };
+        self.pingers.push(new Pinger(options, start, stop));
+    }).value();
+
 }
 
 utils.inherits(PingInspector, Abstract);
 
-PingInspector.prototype.ping = function (url, port) {
-    var promise = new Promise(function (resolve, reject) {
-        var result;
-        var options = {
-            host: url,
-            port: port || 80,
-            path: '/'
-        };
-        var start = Date.now();
-        var pingRequest = http.request(options, function () {
-            result = Date.now() - start;
-            resolve(result);
-            pingRequest.abort();
-        });
-        pingRequest.on("error", function () {
-            result = -1;
-            reject(result);
-            pingRequest.abort();
-        });
-        pingRequest.write("");
-        pingRequest.end();
-    });
-    return promise;
+PingInspector.prototype.stop = function () {
+    _(this.pingers).forEach(function (pinger) {
+        pinger.stop();
+    }).value();
 };
 
+PingInspector.prototype.start = function () {
+    _(this.pingers).forEach(function (pinger) {
+        pinger.run();
+    }).value();
+};
 module.exports = PingInspector;

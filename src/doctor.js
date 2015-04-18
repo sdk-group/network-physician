@@ -1,5 +1,5 @@
 'use strict'
-var EventEmitter2 = require('eventemitter2');
+var EventEmitter2 = require('eventemitter2').EventEmitter2;
 
 var Doctor = function (config) {
     this.emitter = new EventEmitter2({
@@ -9,31 +9,34 @@ var Doctor = function (config) {
     });
     this.inspectors_array = [];
 
-    if (config.hasOwnProperty('inspectors')) {
+    if (!config.hasOwnProperty('inspectors')) {
         config.inspectors = '*';
         //and some actions to include whole dir
     }
 
     var inspectors_names = config.inspectors;
-    var self = this;
+    var len = inspectors_names.length;
 
-    inspectors_names.forEach(function (inspector_options) {
-        var name = inspector_options.name;
-        var params = inspector_options.params;
+    for (var i = 0; i < len; i += 1) {
+        var inspector_params = inspectors_names[i];
+
+        var name = inspector_params.name;
+        var params = inspector_params.params;
+
         var Inspector_Model = require('./inspectors/' + name + '.js');
-        var inspector = new Inspector_Model(params, self.notifyRestore, self.notifyDrop);
+        var inspector = new Inspector_Model(params, this.notifyRestore.bind(this), this.notifyDrop.bind(this));
         inspector.start();
-        self.inspectors_array.push(inspector);
-    });
+        this.inspectors_array.push(inspector);
+    }
 
 };
 
 Doctor.prototype.notifyDrop = function (data) {
-    this.emit('now.healthy', data);
+    this.emit('now.unhealthy', data);
 };
 
 Doctor.prototype.notifyRestore = function (data) {
-    this.emit('now.unhealthy', data);
+    this.emit('now.healthy', data);
 };
 
 Doctor.prototype.on = function (event, listener) {

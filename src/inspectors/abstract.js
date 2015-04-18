@@ -11,4 +11,7 @@ var AbstractInspector = function (params, stop, start) {
     }
 };
 
+AbstractInspector.prototype.start = function () {
+    throw Error('abstract method');
+};
 module.exports = AbstractInspector;
