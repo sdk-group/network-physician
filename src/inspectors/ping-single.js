@@ -30,19 +30,18 @@ var ping = function (url, port) {
 var Single = function (params, start, stop) {
     var interval = params.interval;
     var timeout = params.less_then;
-    var selected_ip = params.ip;
+    this.selected_ip = params.ip;
     var self = this;
     this.stop = false;
-
     this.ping = Promise.coroutine(function* () {
         while (!self.stop) {
-
             yield Promise.delay(interval)
-            yield ping(selected_ip).timeout(timeout, 'timeout')
+            yield ping(self.selected_ip)
+                .timeout(timeout, 'timeout')
                 .then(function (time) {
                     //console.log("Response time: %dms", time);
                     var message = {
-                        ip: selected_ip,
+                        ip: self.selected_ip,
                         description: 'online',
                         type: 'ping.received',
                         time: time
@@ -53,7 +52,7 @@ var Single = function (params, start, stop) {
                     if (data.hasOwnProperty("message") && data.message === 'timeout') {
                         //console.log("timeout");
                         var message = {
-                            ip: selected_ip,
+                            ip: self.selected_ip,
                             description: 'low latency',
                             type: 'ping.timeout',
                             limit: timeout
@@ -63,10 +62,11 @@ var Single = function (params, start, stop) {
                     }
                     //console.log('error');
                     var message = {
-                        ip: selected_ip,
+                        ip: self.selected_ip,
                         description: 'error happens',
                         type: 'ping.error'
                     };
+                    console.log(data);
                     stop(message);
                 });
         }
