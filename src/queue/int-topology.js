@@ -7,24 +7,24 @@ module.exports = {
             name: 'iris-system-events',
             type: 'fanout',
             autoDelete: true
-        },
+            },
         {
-            name: 'network-monitor-authorization',
+            name: 'network-monitor-resolutions',
             type: 'direct',
             autoDelete: true
-        }
+            }
         ],
     queues: [
         {
-            name: 'network-monitor-authorization-queue',
+            name: 'network-monitor-resolutions-queue',
             autoDelete: true,
             subscribe: true
             }
         ],
     bindings: [
         {
-            exchange: 'network-monitor-authorization',
-            target: 'network-monitor-authorization-queue',
+            exchange: 'network-monitor-resolutions',
+            target: 'network-monitor-resolutions-queue',
             keys: ['']
             }
         ]
