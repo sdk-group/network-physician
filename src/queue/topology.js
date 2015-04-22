@@ -9,22 +9,22 @@ module.exports = {
             autoDelete: true
             },
         {
-            name: 'network-monitor-resolutions',
+            name: 'network-monitor-authorization',
             type: 'direct',
             autoDelete: true
             }
         ],
     queues: [
         {
-            name: 'network-monitor-resolutions-queue',
+            name: 'network-monitor-authorization-queue',
             autoDelete: true,
             subscribe: true
             }
         ],
     bindings: [
         {
-            exchange: 'network-monitor-resolutions',
-            target: 'network-monitor-resolutions-queue',
+            exchange: 'network-monitor-authorization',
+            target: 'network-monitor-authorization-queue',
             keys: ['']
             }
         ]

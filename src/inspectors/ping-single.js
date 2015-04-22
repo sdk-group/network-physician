@@ -1,4 +1,5 @@
 'use strict'
+
 var Promise = require('bluebird');
 var http = require("http");
 
@@ -24,15 +25,20 @@ var ping = function (url, port) {
         pingRequest.write("");
         pingRequest.end();
     });
+
     return promise;
 };
 
-var Single = function (params, start, stop) {
+var Single = function (params, emitters) {
     var interval = params.interval;
     var timeout = params.less_then;
     var selected_ip = params.ip;
     var self = this;
     this.stop = false;
+
+    var restore = emitters.restore;
+    var drop = emitters.drop;
+    var register = emitters.register;
 
     this.ping = Promise.coroutine(function* () {
         while (!self.stop) {
@@ -47,7 +53,7 @@ var Single = function (params, start, stop) {
                         type: 'ping.received',
                         time: time
                     };
-                    start(message);
+                    restore(message);
                 })
                 .catch(function (data) {
                     if (data.hasOwnProperty("message") && data.message === 'timeout') {
@@ -58,7 +64,7 @@ var Single = function (params, start, stop) {
                             type: 'ping.timeout',
                             limit: timeout
                         };
-                        stop(message);
+                        drop(message);
                         return;
                     }
                     //console.log('error');
@@ -67,11 +73,17 @@ var Single = function (params, start, stop) {
                         description: 'error happens',
                         type: 'ping.error'
                     };
-                    stop(message);
+                    drop(message);
                 });
         }
     });
 
+    register({
+        permision: 'ping',
+        params: {
+            ip: selected_ip
+        }
+    });
 }
 
 Single.prototype.run = function () {

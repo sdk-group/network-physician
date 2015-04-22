@@ -1,6 +1,13 @@
 'use strict'
 
-var AbstractInspector = function (params, stop, start) {
+var AbstractInspector = function (params, emitters) {
+    /* 
+    emitters  ={
+     drop : notifyDrop, 
+     resotre : notifyResotore, 
+     register : notifyRegister
+    };
+    */
     this.unhealthy = stop;
     this.healthy = start;
     var some_condition = false;
