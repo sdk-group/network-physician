@@ -19,10 +19,6 @@ Doctor.prototype.notifyRestore = function (data) {
 };
 
 Doctor.prototype.notifyRegister = function (data) {
-    var self = this;
-    //    setTimeout(function () {
-    //        self.emit('inspector.register', data)
-    //    }, 1000);            
     this.emit('inspector.register', data)
 };
 

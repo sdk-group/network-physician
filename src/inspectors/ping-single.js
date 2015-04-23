@@ -44,9 +44,9 @@ var Single = function (params, emitters) {
 
     this.ping = Promise.coroutine(function* () {
         while (!self.stop) {
-
             yield Promise.delay(interval)
-            yield ping(selected_ip).timeout(timeout, 'timeout')
+            yield ping(selected_ip)
+                .timeout(timeout, 'timeout')
                 .then(function (time) {
                     //console.log("Response time: %dms", time);
                     var message = {

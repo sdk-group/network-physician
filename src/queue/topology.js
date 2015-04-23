@@ -7,12 +7,12 @@ module.exports = {
             name: 'iris-system-events',
             type: 'fanout',
             autoDelete: true
-            },
+        },
         {
             name: 'network-monitor-authorization',
             type: 'direct',
             autoDelete: true
-            }
+        }
         ],
     queues: [
         {

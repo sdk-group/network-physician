@@ -35,7 +35,7 @@ PermissionList.prototype.restore = function (data) {
     var name = data.permission;
     var changed = this.getPermission(name).restore(data);
     if (changed) {
-        console.log('restored');
+        console.log(data, 'restored');
     }
 };
 

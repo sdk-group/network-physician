@@ -14,8 +14,7 @@ doctor.on('now.unhealthy', function (data) {
 });
 
 doctor.on('now.healthy', function (data) {
-    // console.log('healthy:', data);
-
+    //console.log('healthy:', data);
     permissions.restore(data);
 });
 
