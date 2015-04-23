@@ -72,7 +72,7 @@ var Single = function (params, emitters) {
                     //console.log('error');
                     var message = {
                         ip: selected_ip,
-                        description: 'error happens',
+                        description: data,
                         type: 'ping.error'
                     };
                     self.send('drop', message);
@@ -81,9 +81,7 @@ var Single = function (params, emitters) {
     });
 
     this.send('register', {
-        params: {
-            ip: selected_ip
-        }
+        ip: selected_ip
     });
 }
 

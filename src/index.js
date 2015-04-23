@@ -2,19 +2,21 @@ var iconfig = require('./inspectors-config.json');
 
 var Doctor = require('./doctor.js');
 var PermissionList = require('./permission-list.js');
+var _ = require('lodash');
 
 var doctor = new Doctor();
 
 var permissions = new PermissionList();
 
 doctor.on('now.unhealthy', function (data) {
-    console.log('unhealthy:', data);
-    //   permissions.drop(data);
+    //console.log('unhealthy:', data);
+    permissions.drop(data);
 });
 
 doctor.on('now.healthy', function (data) {
-    console.log('healthy:', data);
-    //   permissions.restore(data);
+    // console.log('healthy:', data);
+
+    permissions.restore(data);
 });
 
 doctor.on('inspector.register', function (data) {

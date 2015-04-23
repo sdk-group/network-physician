@@ -8,17 +8,16 @@ var _ = require('lodash');
  * @param {Object} params permision specific params
  */
 var IpPermission = function (params) {
+
     params = util.isArray(params) ? params : [params];
+
     this.ip_list = {};
 
     var len = params.length;
 
     for (var i = 0; i < len; i += 1) {
         if (!params[i].hasOwnProperty('ip')) throw new Error('Ip feild required');
-
-        this.ip_list[params[i].ip] = {
-            dropped_by: []
-        };
+        this.addItem(params[i].ip);
     }
 
 }
@@ -28,6 +27,13 @@ var IpPermission = function (params) {
  * @param   {Object}  params key params
  * @returns {Boolean} true means permission currently dropped, false - permission was dropped before
  */
+IpPermission.prototype.addItem = function (item) {
+    //should emmit "dropped" event here 
+    this.ip_list[item] = {
+        dropped_by: ['default-block']
+    };
+};
+
 IpPermission.prototype.drop = function (params) {
     var ip = params.ip;
     var name = params.inspector;
@@ -53,7 +59,6 @@ IpPermission.prototype.restore = function (params) {
     var is_restored = null;
     var ip = params.ip;
     var name = params.inspector;
-
     if (!this.ip_list.hasOwnProperty(ip)) throw new Error('Possibly unregistered inspector');
 
     var dropped_by = this.ip_list[ip].dropped_by;
@@ -62,8 +67,7 @@ IpPermission.prototype.restore = function (params) {
         return false;
     }
 
-    this.ip_list[ip].dropped_by = _.without(dropped_by, name);
-
+    this.ip_list[ip].dropped_by = _.without(dropped_by, name, 'default-block');
     is_restored = this.ip_list[ip].dropped_by.length === 0;
 
     return is_restored;
@@ -75,11 +79,7 @@ IpPermission.prototype.restore = function (params) {
  */
 IpPermission.prototype.add = function (params) {
     if (!params.hasOwnProperty('ip')) throw new Error('Ip feild required');
-    var ip = params.ip;
-
-    this.ip_list[ip] = {
-        dropped_by: []
-    };
+    this.addItem(params.ip);
 };
 
 IpPermission.prototype.isDropped = function (ip) {
@@ -87,4 +87,4 @@ IpPermission.prototype.isDropped = function (ip) {
     return !this.ip_list[ip].dropped_by.length;
 };
 
-module.exports = Permision;
+module.exports = IpPermission;
