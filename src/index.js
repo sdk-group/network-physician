@@ -1,22 +1,27 @@
-var Doctor = require('./doctor.js');
 var iconfig = require('./inspectors-config.json');
-//var rabbit = require('./queue/queue.js');
 
-var doctor = new Doctor(iconfig);
+var Doctor = require('./doctor.js');
+var PermissionList = require('./permission-list.js');
+var _ = require('lodash');
+
+var doctor = new Doctor();
+
+var permissions = new PermissionList();
 
 doctor.on('now.unhealthy', function (data) {
-    console.log('unhealthy:', data);
+    //console.log('unhealthy:', data);
+    permissions.drop(data);
 });
 
 doctor.on('now.healthy', function (data) {
-    console.log('healthy:', data);
+    //console.log('healthy:', data);
+    permissions.restore(data);
 });
-/*
-rabbit.handle(function (msg) {
-    console.log('Got authorization request');
-    console.log(msg.body);
-    msg.reply({
-        getReady: 'forawesome'
-    }, 'authorization.response');
-    publish(msg.body.expected);
-});*/
+
+doctor.on('inspector.register', function (data) {
+    permissions.addPermision(data);
+});
+
+/*should do this after all listeners are subscribed*/
+
+doctor.init(iconfig);

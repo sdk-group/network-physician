@@ -1,6 +1,8 @@
 'use strict'
+var Abstract = require('./abstract.js');
 var Promise = require('bluebird');
 var http = require("http");
+var utils = require('util');
 
 var ping = function (url, port) {
     var promise = new Promise(function (resolve, reject) {
@@ -24,55 +26,70 @@ var ping = function (url, port) {
         pingRequest.write("");
         pingRequest.end();
     });
+
     return promise;
 };
 
-var Single = function (params, start, stop) {
+var Single = function (params, emitters) {
     var interval = params.interval;
     var timeout = params.less_then;
-    this.selected_ip = params.ip;
+    var selected_ip = params.ip;
     var self = this;
+
     this.stop = false;
+
+    this.restore = emitters.restore;
+    this.drop = emitters.drop;
+    this.register = emitters.register;
+
     this.ping = Promise.coroutine(function* () {
         while (!self.stop) {
             yield Promise.delay(interval)
-            yield ping(self.selected_ip)
+            yield ping(selected_ip)
                 .timeout(timeout, 'timeout')
                 .then(function (time) {
                     //console.log("Response time: %dms", time);
                     var message = {
-                        ip: self.selected_ip,
+                        ip: selected_ip,
                         description: 'online',
                         type: 'ping.received',
                         time: time
                     };
-                    start(message);
+                    self.send('restore', message);
                 })
                 .catch(function (data) {
                     if (data.hasOwnProperty("message") && data.message === 'timeout') {
                         //console.log("timeout");
                         var message = {
-                            ip: self.selected_ip,
+                            ip: selected_ip,
                             description: 'low latency',
                             type: 'ping.timeout',
                             limit: timeout
                         };
-                        stop(message);
+                        self.send('drop', message);
                         return;
                     }
                     //console.log('error');
                     var message = {
-                        ip: self.selected_ip,
-                        description: 'error happens',
+                        ip: selected_ip,
+                        description: data,
                         type: 'ping.error'
                     };
-                    console.log(data);
-                    stop(message);
+                    self.send('drop', message);
                 });
         }
     });
 
+    this.send('register', {
+        ip: selected_ip
+    });
 }
+
+utils.inherits(Single, Abstract);
+
+Single.prototype.permission = 'ip';
+
+Single.prototype.name = 'ip/ping';
 
 Single.prototype.run = function () {
     this.stop = false;
