@@ -1,24 +1,32 @@
 'use strict'
 
 var AbstractInspector = function (params, emitters) {
-    /* 
-    emitters  ={
-     drop : notifyDrop, 
-     resotre : notifyResotore, 
-     register : notifyRegister
-    };
-    */
-    this.unhealthy = stop;
-    this.healthy = start;
-    var some_condition = false;
-    if (!some_condition) {
-        this.unhealthy('reason');
-    } else {
-        this.unhealthy('healthy');
-    }
+    this.name = 'abstract';
+    this.restore = emitters.restore;
+    this.drop = emitters.drop;
+    this.register = emitters.register;
+
 };
 
 AbstractInspector.prototype.start = function () {
     throw Error('abstract method');
 };
+
+AbstractInspector.prototype.send = function (event_type, data) {
+    data.inspector = this.name;
+    data.permission = this.permission;
+
+    switch (event_type) {
+    case 'drop':
+        this.drop(data);
+        break;
+    case 'restore':
+        this.restore(data)
+        break;
+    case 'register':
+        this.register(data);
+        break;
+    }
+};
+
 module.exports = AbstractInspector;

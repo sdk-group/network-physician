@@ -1,7 +1,8 @@
 'use strict'
-
+var Abstract = require('./abstract.js');
 var Promise = require('bluebird');
 var http = require("http");
+var utils = require('util');
 
 var ping = function (url, port) {
     var promise = new Promise(function (resolve, reject) {
@@ -34,11 +35,12 @@ var Single = function (params, emitters) {
     var timeout = params.less_then;
     var selected_ip = params.ip;
     var self = this;
+
     this.stop = false;
 
-    var restore = emitters.restore;
-    var drop = emitters.drop;
-    var register = emitters.register;
+    this.restore = emitters.restore;
+    this.drop = emitters.drop;
+    this.register = emitters.register;
 
     this.ping = Promise.coroutine(function* () {
         while (!self.stop) {
@@ -53,7 +55,7 @@ var Single = function (params, emitters) {
                         type: 'ping.received',
                         time: time
                     };
-                    restore(message);
+                    self.send('restore', message);
                 })
                 .catch(function (data) {
                     if (data.hasOwnProperty("message") && data.message === 'timeout') {
@@ -64,7 +66,7 @@ var Single = function (params, emitters) {
                             type: 'ping.timeout',
                             limit: timeout
                         };
-                        drop(message);
+                        self.send('drop', message);
                         return;
                     }
                     //console.log('error');
@@ -73,18 +75,23 @@ var Single = function (params, emitters) {
                         description: 'error happens',
                         type: 'ping.error'
                     };
-                    drop(message);
+                    self.send('drop', message);
                 });
         }
     });
 
-    register({
-        permision: 'ping',
+    this.send('register', {
         params: {
             ip: selected_ip
         }
     });
 }
+
+utils.inherits(Single, Abstract);
+
+Single.prototype.permission = 'ip';
+
+Single.prototype.name = 'ip/ping';
 
 Single.prototype.run = function () {
     this.stop = false;

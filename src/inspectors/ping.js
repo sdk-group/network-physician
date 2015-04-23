@@ -1,7 +1,5 @@
 'use strict'
 
-var Abstract = require('./abstract.js');
-var utils = require('util');
 var Promise = require('bluebird');
 var Pinger = require('./ping-single.js');
 var _ = require('lodash');
@@ -29,7 +27,6 @@ var PingInspector = function (params, emitters) {
 
 }
 
-utils.inherits(PingInspector, Abstract);
 
 PingInspector.prototype.stop = function () {
     _(this.pingers).forEach(function (pinger) {

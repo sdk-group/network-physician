@@ -27,5 +27,8 @@ Permission.prototype.restore = function (params) {
     //return true || false;
 };
 
+Permission.prototype.add = function (params) {
+
+};
 
 module.exports = Permision;

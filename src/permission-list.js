@@ -1,11 +1,14 @@
 'use strict'
 
 var PermissionList = function () {
-    this.permisions = [];
+    this.permissions = {};
 }
 
 PermissionList.prototype.addPermision = function (data) {
-
+    var name = data.permission;
+    var permission_module = name + '-permission';
+    if (this.permissions.hasOwnProperty(name)) {}
+    console.log(permission_module);
 };
 
 PermissionList.prototype.restore = function (data) {
@@ -24,7 +27,7 @@ PermissionList.prototype.drop = function (data) {
 
 PermissionList.prototype.getPermission = function (data) {
     //permission or error
-
+    var permission = {};
     return permission;
 };
 

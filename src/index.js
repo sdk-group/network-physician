@@ -9,16 +9,15 @@ var permissions = new PermissionList();
 
 doctor.on('now.unhealthy', function (data) {
     console.log('unhealthy:', data);
-    permissions.drop(data);
+    //   permissions.drop(data);
 });
 
 doctor.on('now.healthy', function (data) {
     console.log('healthy:', data);
-    permissions.restore(data);
+    //   permissions.restore(data);
 });
 
 doctor.on('inspector.register', function (data) {
-    console.log('register:', data);
     permissions.addPermision(data);
 });
 
