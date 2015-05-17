@@ -82,9 +82,10 @@ IpPermission.prototype.add = function (params) {
     this.addItem(params.ip);
 };
 
-IpPermission.prototype.isDropped = function (ip) {
-    if (!this.ip_list.hasOwnProperty(ip)) return 'error';
-    return !this.ip_list[ip].dropped_by.length;
+IpPermission.prototype.isDropped = function (params) {
+    var ip = params.ip;
+    if (!this.ip_list.hasOwnProperty(ip)) throw new Error('Key missing');
+    return !!this.ip_list[ip].dropped_by.length;
 };
 
 module.exports = IpPermission;

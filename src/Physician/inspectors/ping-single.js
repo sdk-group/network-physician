@@ -41,14 +41,12 @@ var Single = function (params, emitters) {
     this.restore = emitters.restore;
     this.drop = emitters.drop;
     this.register = emitters.register;
-
     this.ping = Promise.coroutine(function* () {
         while (!self.stop) {
             yield Promise.delay(interval)
             yield ping(selected_ip)
                 .timeout(timeout, 'timeout')
                 .then(function (time) {
-                    //console.log("Response time: %dms", time);
                     var message = {
                         ip: selected_ip,
                         description: 'online',
@@ -59,7 +57,6 @@ var Single = function (params, emitters) {
                 })
                 .catch(function (data) {
                     if (data.hasOwnProperty("message") && data.message === 'timeout') {
-                        //console.log("timeout");
                         var message = {
                             ip: selected_ip,
                             description: 'low latency',
@@ -69,7 +66,6 @@ var Single = function (params, emitters) {
                         self.send('drop', message);
                         return;
                     }
-                    //console.log('error');
                     var message = {
                         ip: selected_ip,
                         description: data,
