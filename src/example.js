@@ -38,7 +38,15 @@ Promise.props({
     console.log('WTF!', e);
 });
 
+/* this will be cooler next time */
 
+ee.on('permission.dropped', function (d) {
+    console.log(d);
+});
+
+ee.on('permission.restored', function (d) {
+    console.log(d);
+});
 /*Test part, ya.ru should be always up*/
 
 

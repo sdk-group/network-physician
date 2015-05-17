@@ -55,7 +55,7 @@ PermissionList.prototype.restore = function (data) {
     var changed = this.getPermission(name).restore(data);
 
     if (changed) {
-        this.emitter.emit(this.event_names.dropped, {
+        this.emitter.emit(this.event_names.restored, {
             wat: 'god bless u, its restored'
         });
     }
