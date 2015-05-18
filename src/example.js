@@ -2,7 +2,7 @@
 
 /* test */
 
-var iconfig = require('./inspectors-config.json');
+var iconfig = require('../inspectors-config.json');
 var EventEmitter2 = require('eventemitter2').EventEmitter2;
 var Promise = require('bluebird');
 
@@ -47,6 +47,7 @@ ee.on('permission.dropped', function (d) {
 ee.on('permission.restored', function (d) {
     console.log(d);
 });
+
 /*Test part, ya.ru should be always up*/
 
 

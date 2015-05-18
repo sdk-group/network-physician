@@ -1,6 +1,7 @@
 'use strict'
 
 var Abstract = require('../Abstract/abstract.js');
+var Promise = require('bluebird');
 var util = require('util');
 
 /*utility function*/
@@ -25,9 +26,21 @@ var PermissionList = function () {
     this.event_group = 'permission';
     PermissionList.super_.apply(this);
     this.permissions = {};
+    this.doctor_events = this.getEvents('doctor');
 }
 
 util.inherits(PermissionList, Abstract);
+
+PermissionList.prototype.init = function () {
+
+    if (!this.emitter) return Promise.reject('U should set channels before');
+
+    this.emitter.on(this.doctor_events.unhealthy, (data) => this.drop(data));
+    this.emitter.on(this.doctor_events.healthy, (data) => this.restore(data));
+    this.emitter.on(this.doctor_events.register, (data) => this.addPermision(data));
+
+    return Promise.resolve(true);
+};
 
 /**
  * Own API starts here

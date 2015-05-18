@@ -15,13 +15,16 @@ var AbstrasctService = function () {
     this.event_group 
     */
     this.paused = true;
-    this.event_names = this.event_group ? getEvents(this.event_group) : {};
+    this.event_names = this.event_group ? this.getEvents(this.event_group) : {};
     this.queues_required = {
         "event-queue": true,
         "task-queue": false
     };
 }
 
+AbstrasctService.prototype.getEvents = function (event_group) {
+    return getEvents(event_group);
+};
 
 AbstrasctService.prototype.setChanels = function (options) {
     if (!options.hasOwnProperty('queue')) {

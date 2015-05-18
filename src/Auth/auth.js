@@ -32,20 +32,6 @@ Auth.prototype.init = function (config) {
 
     this.list.init();
 
-    var permissions = this.list;
-
-    this.emitter.on(this.event_names.unhealthy, function (data) {
-        permissions.drop(data);
-    });
-
-    this.emitter.on(this.event_names.healthy, function (data) {
-        permissions.restore(data);
-    });
-
-    this.emitter.on(this.event_names.register, function (data) {
-        permissions.addPermision(data);
-    });
-
     return Promise.resolve(true);
 };
 
