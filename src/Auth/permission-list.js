@@ -34,10 +34,17 @@ util.inherits(PermissionList, Abstract);
 PermissionList.prototype.init = function () {
 
     if (!this.emitter) return Promise.reject('U should set channels before');
+    var self = this;
 
-    this.emitter.on(this.doctor_events.unhealthy, (data) => this.drop(data));
-    this.emitter.on(this.doctor_events.healthy, (data) => this.restore(data));
-    this.emitter.on(this.doctor_events.register, (data) => this.addPermision(data));
+    this.emitter.on(this.doctor_events.unhealthy, function (data) {
+        self.drop(data);
+    });
+    this.emitter.on(this.doctor_events.healthy, function (data) {
+        self.restore(data);
+    });
+    this.emitter.on(this.doctor_events.register, function (data) {
+        self.addPermision(data);
+    });
 
     return Promise.resolve(true);
 };
