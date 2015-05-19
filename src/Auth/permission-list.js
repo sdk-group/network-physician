@@ -54,7 +54,7 @@ PermissionList.prototype.init = function () {
  */
 
 PermissionList.prototype.addPermision = function (data) {
-    var name = data.permission;
+    var name = data.name;
     var permission_module = name + '-permission';
     var p = {};
 
@@ -71,23 +71,23 @@ PermissionList.prototype.addPermision = function (data) {
 };
 
 PermissionList.prototype.restore = function (data) {
-    var name = data.permission;
+    var name = data.name;
     var changed = this.getPermission(name).restore(data);
 
     if (changed) {
         this.emitter.emit(this.event_names.restored, {
-            wat: 'god bless u, its restored'
+            permission: data
         });
     }
 };
 
 PermissionList.prototype.drop = function (data) {
-    var name = data.permission;
+    var name = data.name;
     var changed = this.getPermission(name).drop(data);
 
     if (changed) {
         this.emitter.emit(this.event_names.dropped, {
-            wat: 'yeap, its dropped'
+            permission: data
         });
     }
 };

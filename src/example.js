@@ -10,15 +10,18 @@ var Promise = require('bluebird');
 
 var Doctor = require('./Physician/physician.js');
 var Auth = require('./Auth/auth.js');
+var Queue = require('../custom-queue');
 
 var doctor = new Doctor();
 var auth = new Auth();
 
-var ee = new EventEmitter2({
-    wildcard: false,
-    newListener: false,
-    maxListeners: 10
-});
+//var ee = new EventEmitter2({
+//    wildcard: false,
+//    newListener: false,
+//    maxListeners: 10
+//});
+
+var ee = new Queue();
 
 doctor.setChanels({
     "event-queue": ee

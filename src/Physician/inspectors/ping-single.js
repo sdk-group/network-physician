@@ -30,6 +30,15 @@ var ping = function (url, port) {
     return promise;
 };
 
+var makeMessage = function (params) {
+    return {
+        key: {
+            ip: params.ip
+        },
+        reason: params.reason
+    };
+}
+
 var Single = function (params, emitters) {
     var interval = params.interval;
     var timeout = params.less_then;
@@ -47,30 +56,25 @@ var Single = function (params, emitters) {
             yield ping(selected_ip)
                 .timeout(timeout, 'timeout')
                 .then(function (time) {
-                    var message = {
+                    var message = makeMessage({
                         ip: selected_ip,
-                        description: 'online',
-                        type: 'ping.received',
-                        time: time
-                    };
+                        reason: 'online'
+                    });
                     self.send('restore', message);
                 })
                 .catch(function (data) {
                     if (data.hasOwnProperty("message") && data.message === 'timeout') {
-                        var message = {
+                        var message = makeMessage({
                             ip: selected_ip,
-                            description: 'low latency',
-                            type: 'ping.timeout',
-                            limit: timeout
-                        };
+                            reason: 'low-latency'
+                        });
                         self.send('drop', message);
                         return;
                     }
-                    var message = {
+                    var message = makeMessage({
                         ip: selected_ip,
-                        description: data,
-                        type: 'ping.error'
-                    };
+                        reason: 'ping-error'
+                    });
                     self.send('drop', message);
                 });
         }
@@ -83,9 +87,9 @@ var Single = function (params, emitters) {
 
 utils.inherits(Single, Abstract);
 
-Single.prototype.permission = 'ip';
+Single.prototype.permission_name = 'ip';
 
-Single.prototype.name = 'ip/ping';
+Single.prototype.inspector_name = 'ip/ping';
 
 Single.prototype.run = function () {
     this.stop = false;

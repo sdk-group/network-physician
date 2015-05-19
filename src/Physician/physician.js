@@ -82,7 +82,8 @@ Doctor.prototype.resume = function () {
  */
 Doctor.prototype.notifyDrop = function (data) {
     if (this.paused) return false;
-    this.emit(this.event_names.unhealthy, data);
+
+    this.emitter.emit(this.event_names.unhealthy, data);
 };
 /**
  * Emits restore events
@@ -91,7 +92,8 @@ Doctor.prototype.notifyDrop = function (data) {
  */
 Doctor.prototype.notifyRestore = function (data) {
     if (this.paused) return false;
-    this.emit(this.event_names.healthy, data);
+
+    this.emitter.emit(this.event_names.healthy, data);
 };
 
 /**
@@ -101,7 +103,8 @@ Doctor.prototype.notifyRestore = function (data) {
  */
 Doctor.prototype.notifyRegister = function (data) {
     if (this.paused) return false;
-    this.emit(this.event_names.register, data)
+
+    this.emitter.emit(this.event_names.register, data)
 };
 
 /**
@@ -119,6 +122,7 @@ Doctor.prototype.emit = function (event, data) {
     if (!this.emitter) {
         throw new Error('Emitter not defined');
     }
+
     this.emitter.emit(event, data);
 };
 
