@@ -16,7 +16,7 @@ var PingInspector = function (params, emitters) {
 
     this.pingers = [];
     //bluebird generator there
-    _(this.ip).forEach(function (ip) {
+    _(this.ip).forEach((ip) => {
         var options = {
             interval: params.interval,
             less_then: params.less_then,
@@ -29,14 +29,11 @@ var PingInspector = function (params, emitters) {
 
 
 PingInspector.prototype.stop = function () {
-    _(this.pingers).forEach(function (pinger) {
-        pinger.stop();
-    }).value();
+    _(this.pingers).forEach(pinger => pinger.stop()).value();
 };
 
 PingInspector.prototype.start = function () {
-    _(this.pingers).forEach(function (pinger) {
-        pinger.run();
-    }).value();
+    _(this.pingers).forEach(pinger => pinger.run()).value();
 };
+
 module.exports = PingInspector;

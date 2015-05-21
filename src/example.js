@@ -43,13 +43,8 @@ Promise.props({
 
 /* this will be cooler next time */
 
-ee.on('permission.dropped', function (d) {
-    console.log(d);
-});
-
-ee.on('permission.restored', function (d) {
-    console.log(d);
-});
+ee.on('permission.dropped', d => console.log(d));
+ee.on('permission.restored', d => console.log(d));
 
 /*Test part, ya.ru should be always up*/
 
