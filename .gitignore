@@ -2,4 +2,5 @@
 *.log
 node_modules
 srces6
+build
 *.node
