@@ -2,7 +2,7 @@
 
 /* test */
 
-var iconfig = require('./inspectors-config.json');
+var iconfig = require('../inspectors-config.json');
 var EventEmitter2 = require('eventemitter2').EventEmitter2;
 var Promise = require('bluebird');
 
@@ -10,15 +10,18 @@ var Promise = require('bluebird');
 
 var Doctor = require('./Physician/physician.js');
 var Auth = require('./Auth/auth.js');
+var Queue = require('../custom-queue');
 
 var doctor = new Doctor();
 var auth = new Auth();
 
-var ee = new EventEmitter2({
-    wildcard: false,
-    newListener: false,
-    maxListeners: 10
-});
+//var ee = new EventEmitter2({
+//    wildcard: false,
+//    newListener: false,
+//    maxListeners: 10
+//});
+
+var ee = new Queue();
 
 doctor.setChanels({
     "event-queue": ee
@@ -47,6 +50,7 @@ ee.on('permission.dropped', function (d) {
 ee.on('permission.restored', function (d) {
     console.log(d);
 });
+
 /*Test part, ya.ru should be always up*/
 
 

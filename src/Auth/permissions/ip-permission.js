@@ -35,7 +35,7 @@ IpPermission.prototype.addItem = function (item) {
 };
 
 IpPermission.prototype.drop = function (params) {
-    var ip = params.ip;
+    var ip = params.key.ip;
     var name = params.inspector;
     var is_dropped = null;
 
@@ -57,7 +57,7 @@ IpPermission.prototype.drop = function (params) {
  */
 IpPermission.prototype.restore = function (params) {
     var is_restored = null;
-    var ip = params.ip;
+    var ip = params.key.ip;
     var name = params.inspector;
     if (!this.ip_list.hasOwnProperty(ip)) throw new Error('Possibly unregistered inspector');
 

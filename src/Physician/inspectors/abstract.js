@@ -13,8 +13,8 @@ AbstractInspector.prototype.start = function () {
 };
 
 AbstractInspector.prototype.send = function (event_type, data) {
-    data.inspector = this.name;
-    data.permission = this.permission;
+    data.inspector = this.inspector_name;
+    data.name = this.permission_name;
 
     switch (event_type) {
     case 'drop':

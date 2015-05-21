@@ -1,6 +1,7 @@
 'use strict'
 
 var Abstract = require('../Abstract/abstract.js');
+var Promise = require('bluebird');
 var util = require('util');
 
 /*utility function*/
@@ -25,16 +26,35 @@ var PermissionList = function () {
     this.event_group = 'permission';
     PermissionList.super_.apply(this);
     this.permissions = {};
+    this.doctor_events = this.getEvents('doctor');
 }
 
 util.inherits(PermissionList, Abstract);
+
+PermissionList.prototype.init = function () {
+
+    if (!this.emitter) return Promise.reject('U should set channels before');
+    var self = this;
+
+    this.emitter.on(this.doctor_events.unhealthy, function (data) {
+        self.drop(data);
+    });
+    this.emitter.on(this.doctor_events.healthy, function (data) {
+        self.restore(data);
+    });
+    this.emitter.on(this.doctor_events.register, function (data) {
+        self.addPermision(data);
+    });
+
+    return Promise.resolve(true);
+};
 
 /**
  * Own API starts here
  */
 
 PermissionList.prototype.addPermision = function (data) {
-    var name = data.permission;
+    var name = data.name;
     var permission_module = name + '-permission';
     var p = {};
 
@@ -51,23 +71,23 @@ PermissionList.prototype.addPermision = function (data) {
 };
 
 PermissionList.prototype.restore = function (data) {
-    var name = data.permission;
+    var name = data.name;
     var changed = this.getPermission(name).restore(data);
 
     if (changed) {
         this.emitter.emit(this.event_names.restored, {
-            wat: 'god bless u, its restored'
+            permission: data
         });
     }
 };
 
 PermissionList.prototype.drop = function (data) {
-    var name = data.permission;
+    var name = data.name;
     var changed = this.getPermission(name).drop(data);
 
     if (changed) {
         this.emitter.emit(this.event_names.dropped, {
-            wat: 'yeap, its dropped'
+            permission: data
         });
     }
 };
