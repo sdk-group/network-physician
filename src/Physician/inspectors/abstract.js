@@ -16,7 +16,9 @@ class Abstract_Inspector {
     }) {
 
         this.inspector_name = inspector_name;
+
         var permission = this.permission_watched = require('../../Model/Permission/' + permission_watched + '.js');
+
         this.permission_name = permission.getName();
         this.key = permission.makeKey(key_data);
 

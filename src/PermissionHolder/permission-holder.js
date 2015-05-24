@@ -53,7 +53,7 @@ class PermissionList extends Abstract {
 
         this.emitter.on(this.doctor_events.healthy, data => this.restore(data));
 
-        this.emitter.on(this.doctor_events.register, data => this.addPermision(data));
+        this.emitter.on(this.doctor_events.register, data => this.addPermission(data));
 
         return Promise.resolve(true);
     };
@@ -62,7 +62,7 @@ class PermissionList extends Abstract {
      * Own API starts here
      */
 
-    addPermision(data) {
+    addPermission(data) {
         var name = data.name;
         var p = {};
 

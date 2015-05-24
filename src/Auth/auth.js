@@ -29,8 +29,6 @@ class Auth extends Abstract {
         this.config = config || {};
         if (!this.emitter) return Promise.reject('U should set channels before');
 
-
-
         return this.list.init();
     }
 

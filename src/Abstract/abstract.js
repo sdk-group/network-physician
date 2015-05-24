@@ -4,7 +4,18 @@ var Promise = require('bluebird');
 
 /*utility function*/
 var getEvents = require('../const/events.js');
-/*--------------------*/
+
+var modules = [];
+var getPermissionModel = function (module_name) {
+    //coz cashing is slightly faster
+    if (modules.hasOwnProperty(module_name)) {
+        return modules[module_name];
+    }
+
+    modules[module_name] = require('../Model/Permission/' + module_name + '.js');
+
+    return modules[module_name];
+}
 
 /**
  * Abstract service
@@ -26,10 +37,17 @@ class Abstrasct_Service {
     getEvents(event_group) {
         return getEvents(event_group);
     }
+    addPermission(name, params) {
+        var model = getPermissionModel(name);
+        var permission = new model(params);
+        this.required_permissions.push(permission);
+
+        return this;
+    }
     requestPermission() {
         if (!this.required_permissions.length) return
-
-        return true;
+        var p = new Promise().resolve(true);
+        return p;
     }
     setChannels(options) {
         if (!options.hasOwnProperty('queue')) {
