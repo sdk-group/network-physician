@@ -3,7 +3,7 @@
 var Abstract = require('../Abstract/abstract.js');
 var util = require('util');
 var Promise = require('bluebird');
-var PermissionList = require('./permission-list.js');
+var PermissionList = require('../PermissionHolder/permission-holder.js');
 
 class Auth extends Abstract {
     constructor() {
@@ -17,10 +17,10 @@ class Auth extends Abstract {
         };
         this.list = new PermissionList();
     }
-    setChanels(options) {
-        super.setChanels(options);
+    setChannels(options) {
+        super.setChannels(options);
 
-        this.list.setChanels(options);
+        this.list.setChannels(options);
 
         return this;
     }
@@ -29,9 +29,9 @@ class Auth extends Abstract {
         this.config = config || {};
         if (!this.emitter) return Promise.reject('U should set channels before');
 
-        this.list.init();
 
-        return Promise.resolve(true);
+
+        return this.list.init();
     }
 
     start() {
@@ -77,7 +77,7 @@ class Auth extends Abstract {
                 valid: true
             };
 
-            if (!this.list.exists(name)) {
+            if (!this.list.exists(name, key)) {
                 valid = false;
                 info.reason = 'not-exists';
                 info.valid = false;

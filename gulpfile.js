@@ -4,10 +4,9 @@ var babel = require("gulp-babel");
 var concat = require("gulp-concat");
 var watch = require('gulp-watch');
 
-require("harmonize")();
 
 gulp.task("default", function () {
-    return gulp.src("src-es6/**/*.js")
+    return gulp.src("src/**/*.js")
         .pipe(babel({
             blacklist: ['bluebirdCoroutines', 'regenerator']
         }))
@@ -21,7 +20,7 @@ gulp.task("default", function () {
 });
 
 gulp.task('es6', function () {
-    return gulp.src("src-es6/**/*.js")
+    return gulp.src("src/**/*.js")
         .pipe(babel({
             blacklist: ['bluebirdCoroutines', 'regenerator']
         }))
@@ -31,9 +30,11 @@ gulp.task('es6', function () {
 
 
 gulp.task("sm", function () {
-    return gulp.src("src-es6/**/*.js")
+    return gulp.src("src/**/*.js")
         .pipe(sourcemaps.init())
-        .pipe(babel())
+        .pipe(babel({
+            blacklist: ['bluebirdCoroutines', 'regenerator']
+        }))
         .pipe(sourcemaps.write("./maps"))
         .pipe(gulp.dest("build"));
 });

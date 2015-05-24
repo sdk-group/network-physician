@@ -9,7 +9,7 @@ var getEvents = require('../const/events.js');
 /**
  * Abstract service
  */
-class AbstrasctService {
+class Abstrasct_Service {
     constructor({
         event_group: event_group
     }) {
@@ -20,11 +20,18 @@ class AbstrasctService {
             "event-queue": true,
             "task-queue": false
         };
+
+        this.required_permissions = [];
     }
     getEvents(event_group) {
         return getEvents(event_group);
     }
-    setChanels(options) {
+    requestPermission() {
+        if (!this.required_permissions.length) return
+
+        return true;
+    }
+    setChannels(options) {
         if (!options.hasOwnProperty('queue')) {
 
             if (this.queues_required['event-queue'] && this.queues_required['task-queue']) {
@@ -60,6 +67,8 @@ class AbstrasctService {
 
     start() {
         //@TODO: What should it do in current context?
+        //@TODO: requesPermissions() here
+
         this.paused = false;
 
         return this;
@@ -80,4 +89,4 @@ class AbstrasctService {
     }
 }
 
-module.exports = AbstrasctService;
+module.exports = Abstrasct_Service;
