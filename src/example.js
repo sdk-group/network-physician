@@ -2,51 +2,48 @@
 
 /* test */
 
-var iconfig = require('./inspectors-config.json');
-var EventEmitter2 = require('eventemitter2').EventEmitter2;
+var iconfig = require('../inspectors-config.json');
 var Promise = require('bluebird');
 
 /* services */
 
 var Doctor = require('./Physician/physician.js');
 var Auth = require('./Auth/auth.js');
+var Queue = require('custom-queue');
 
 var doctor = new Doctor();
 var auth = new Auth();
 
-var ee = new EventEmitter2({
-    wildcard: false,
-    newListener: false,
-    maxListeners: 10
-});
+//var ee = new EventEmitter2({
+//    wildcard: false,
+//    newListener: false,
+//    maxListeners: 10
+//});
 
-doctor.setChanels({
+var ee = new Queue();
+
+doctor.setChannels({
     "event-queue": ee
 });
 
-auth.setChanels({
+auth.setChannels({
     "queue": ee
 });
+
 
 Promise.props({
     auth: auth.init(),
     doctor: doctor.init(iconfig)
 }).then(function () {
-    doctor.start();
     auth.start();
-}).catch(function (e) {
-    console.log('WTF!', e);
+    doctor.start();
 });
 
 /* this will be cooler next time */
 
-ee.on('permission.dropped', function (d) {
-    console.log(d);
-});
+ee.on('permission.dropped', d => console.log(d));
+ee.on('permission.restored', d => console.log('restored:', d));
 
-ee.on('permission.restored', function (d) {
-    console.log(d);
-});
 /*Test part, ya.ru should be always up*/
 
 
@@ -54,20 +51,14 @@ setTimeout(function () {
     check();
 }, 4000);
 
+var Ip_Model = require('./Model/Permission/ip.js');
+
+
 var check = function () {
     var v = auth.check([
-        {
-            permission: 'ip',
-            key: {
-                'ip': 'ya.ru'
-            }
-        },
-        {
-            permission: 'ip',
-            key: {
-                'ip': '192.168.43.74'
-            }
-        }
+        new Ip_Model('ya.ru').requestMessage(),
+        new Ip_Model('127.1.1.1').requestMessage(),
+        new Ip_Model('192.168.43.74').requestMessage()
     ]);
 
     console.log(v);

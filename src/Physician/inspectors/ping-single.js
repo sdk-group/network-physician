@@ -2,7 +2,6 @@
 var Abstract = require('./abstract.js');
 var Promise = require('bluebird');
 var http = require("http");
-var utils = require('util');
 
 var ping = function (url, port) {
     var promise = new Promise(function (resolve, reject) {
@@ -30,70 +29,57 @@ var ping = function (url, port) {
     return promise;
 };
 
-var Single = function (params, emitters) {
-    var interval = params.interval;
-    var timeout = params.less_then;
-    var selected_ip = params.ip;
-    var self = this;
+class Single extends Abstract {
+    constructor(params, emitters) {
+        super(params, emitters);
 
-    this.stop = false;
+        this.init({
+            permission_watched: 'ip',
+            inspector_name: 'ip/ping',
+            key_data: params.key_data
+        });
 
-    this.restore = emitters.restore;
-    this.drop = emitters.drop;
-    this.register = emitters.register;
-    this.ping = Promise.coroutine(function* () {
-        while (!self.stop) {
-            yield Promise.delay(interval)
-            yield ping(selected_ip)
-                .timeout(timeout, 'timeout')
-                .then(function (time) {
-                    var message = {
-                        ip: selected_ip,
-                        description: 'online',
-                        type: 'ping.received',
-                        time: time
-                    };
-                    self.send('restore', message);
-                })
-                .catch(function (data) {
-                    if (data.hasOwnProperty("message") && data.message === 'timeout') {
-                        var message = {
-                            ip: selected_ip,
-                            description: 'low latency',
-                            type: 'ping.timeout',
-                            limit: timeout
-                        };
-                        self.send('drop', message);
-                        return;
-                    }
-                    var message = {
-                        ip: selected_ip,
-                        description: data,
-                        type: 'ping.error'
-                    };
-                    self.send('drop', message);
-                });
-        }
-    });
+        this.interval = params.interval;
+        this.timeout = params.less_then;
+        this.selected_ip = params.key_data;
 
-    this.send('register', {
-        ip: selected_ip
-    });
+    }
+
+    ping() {
+
+        var self = this;
+
+        var interval = this.interval;
+        var timeout = this.timeout;
+        var selected_ip = this.selected_ip;
+
+        var forever_ping = Promise.coroutine(function* () {
+            while (!self.stop) {
+                yield Promise.delay(interval)
+
+                yield ping(selected_ip)
+                    .timeout(timeout, 'timeout')
+                    .then(function (time) {
+                        self.send('restore', 'online');
+                    })
+                    .catch(function (data) {
+                        var is_timeout = data.hasOwnProperty("message") && data.message === 'timeout';
+                        self.send('drop', is_timeout ? 'low-latency' : 'ping-error');
+                    });
+            }
+        });
+
+        forever_ping();
+    }
+
+    run() {
+        this.stop = false;
+        this.ping();
+    }
+
+    stop() {
+        this.stop = true;
+    }
 }
-
-utils.inherits(Single, Abstract);
-
-Single.prototype.permission = 'ip';
-
-Single.prototype.name = 'ip/ping';
-
-Single.prototype.run = function () {
-    this.stop = false;
-    this.ping();
-};
-
-Single.prototype.stop = function () {
-    this.stop = true;
-};
 
 module.exports = Single;
